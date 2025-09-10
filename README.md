@@ -1,4 +1,4 @@
-# GLM MCP Server - 智谱AI图像分析工具
+# General Read Image For Claude Code - 通用大模型接入Claude Code读图分析助手
 
 <div align="center">
 
@@ -12,6 +12,10 @@
 [功能特性](#-功能特性) • [快速开始](#-快速开始) • [安装指南](#-安装指南) • [使用方法](#-使用方法) • [故障排除](#-故障排除)
 
 </div>
+
+
+![pj](https://github.com/user-attachments/assets/b93ce6a6-4629-49c4-b5a1-a86666cdf474)
+
 
 ## ⚡ 快速开始
 
@@ -219,6 +223,8 @@ glmMcp/
 
 ## 📞 支持
 
+<img width="477" height="477" alt="林枫_qrcode" src="https://github.com/user-attachments/assets/14bae59a-3e7d-4843-9e72-6744b1d5b636" />
+
 - 📧 **问题反馈**：[GitHub Issues](https://github.com/your-username/glm-mcp-server/issues)
 - 📖 **文档**：[完整文档](https://github.com/your-username/glm-mcp-server/wiki)
 - 💬 **讨论**：[GitHub Discussions](https://github.com/your-username/glm-mcp-server/discussions)
@@ -226,6 +232,9 @@ glmMcp/
 ---
 
 <div align="center">
+
+
+
 
 **如果这个项目对您有帮助，请给我们一个 ⭐️ Star**
 
