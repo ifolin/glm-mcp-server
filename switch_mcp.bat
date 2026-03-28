@@ -14,17 +14,17 @@ echo 当前状态：
 :: 检查 deny 中是否有 4_5v 规则
 findstr /c:"4_5v" "%SETTINGS%" >nul 2>&1
 if !errorlevel! equ 0 (
-    echo   [√] glm-mcp 本地免费版 - 已启用
-    echo   [×] 内置 4_5v_mcp 付费版 - 已禁用
+    echo   [√] glm-mcp 本地版 - 已启用
+    echo   [×] 云端 4_5v_mcp - 已禁用
 ) else (
-    echo   [×] glm-mcp 本地免费版 - 可用
-    echo   [√] 内置 4_5v_mcp 付费版 - 可用
+    echo   [×] glm-mcp 本地版 - 可用
+    echo   [√] 云端 4_5v_mcp - 可用
 )
 
 echo.
 echo 请选择：
-echo   1. 使用 glm-mcp（免费，推荐）
-echo   2. 使用内置 4_5v_mcp（付费）
+echo   1. 使用 glm-mcp（本地模型，推荐）
+echo   2. 使用云端 4_5v_mcp（云端模型）
 echo   3. 两者都允许（Claude 自动选择）
 echo   4. 退出
 echo.
@@ -41,7 +41,7 @@ exit /b 1
 
 :use_glm
 echo.
-echo 正在切换到 glm-mcp（免费版）...
+echo 正在切换到 glm-mcp（本地模型）...
 python -c "
 import json
 with open(r'%SETTINGS%', 'r', encoding='utf-8') as f:
@@ -58,9 +58,9 @@ if 'mcp__glm-mcp__analyze_image' not in allow:
     allow.append('mcp__glm-mcp__analyze_image')
 with open(r'%SETTINGS%', 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
-print('[OK] 已切换到 glm-mcp（免费版）')
+print('[OK] 已切换到 glm-mcp（本地模型）')
 print('  - glm-mcp: 已启用')
-print('  - 内置 4_5v_mcp: 已禁用')
+print('  - 云端 4_5v_mcp: 已禁用')
 "
 echo.
 echo 请重启 Claude Code 使配置生效
@@ -69,7 +69,7 @@ exit /b 0
 
 :use_builtin
 echo.
-echo 正在切换到内置 4_5v_mcp（付费版）...
+echo 正在切换到云端 4_5v_mcp（云端模型）...
 python -c "
 import json
 with open(r'%SETTINGS%', 'r', encoding='utf-8') as f:
@@ -85,9 +85,9 @@ for item in to_add:
 deny[:] = [x for x in deny if '4_5v' not in x and '4.5v' not in x]
 with open(r'%SETTINGS%', 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
-print('[OK] 已切换到内置 4_5v_mcp（付费版）')
+print('[OK] 已切换到云端 4_5v_mcp（云端模型）')
 print('  - glm-mcp: 已禁用')
-print('  - 内置 4_5v_mcp: 已启用')
+print('  - 云端 4_5v_mcp: 已启用')
 "
 echo.
 echo 请重启 Claude Code 使配置生效
@@ -114,7 +114,7 @@ with open(r'%SETTINGS%', 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
 print('[OK] 两者都允许')
 print('  - glm-mcp: 已启用')
-print('  - 内置 4_5v_mcp: 已启用')
+print('  - 云端 4_5v_mcp: 已启用')
 print('  Claude 将根据上下文自动选择')
 "
 echo.
