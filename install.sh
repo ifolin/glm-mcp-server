@@ -99,7 +99,7 @@ if [[ $API_KEY_CONFIGURED -eq 0 ]]; then
         
         echo "export GLM_API_KEY=\"$GLM_API_KEY_INPUT\"" >> "$SHELL_CONFIG"
         echo "export GLM_API_BASE=\"https://open.bigmodel.cn/api/paas/v4/\"" >> "$SHELL_CONFIG"
-        echo "export GLM_IMAGE_MODEL=\"glm-4.5v\"" >> "$SHELL_CONFIG"
+        echo "export GLM_IMAGE_MODEL=\"glm-4.6v\"" >> "$SHELL_CONFIG"
         
         echo -e "${GREEN}[✓] API密钥已保存到 $SHELL_CONFIG${NC}"
         echo "请运行以下命令使配置生效："
@@ -114,7 +114,7 @@ if [[ $API_KEY_CONFIGURED -eq 0 ]]; then
         
         echo "export GLM_API_KEY=\"$GLM_API_KEY_INPUT\"" >> "$SHELL_CONFIG"
         echo "export GLM_API_BASE=\"https://open.bigmodel.cn/api/paas/v4/\"" >> "$SHELL_CONFIG"
-        echo "export GLM_IMAGE_MODEL=\"glm-4.5v\"" >> "$SHELL_CONFIG"
+        echo "export GLM_IMAGE_MODEL=\"glm-4.6v\"" >> "$SHELL_CONFIG"
         
         echo -e "${GREEN}[✓] API密钥已保存到 $SHELL_CONFIG${NC}"
         echo "请运行以下命令使配置生效："
@@ -124,7 +124,7 @@ if [[ $API_KEY_CONFIGURED -eq 0 ]]; then
     # 立即设置当前会话的环境变量
     export GLM_API_KEY="$GLM_API_KEY_INPUT"
     export GLM_API_BASE="https://open.bigmodel.cn/api/paas/v4/"
-    export GLM_IMAGE_MODEL="glm-4.5v"
+    export GLM_IMAGE_MODEL="glm-4.6v"
     
 else
     echo -e "${GREEN}[✓] API密钥已配置，跳过设置步骤${NC}"
@@ -144,7 +144,7 @@ cat > "$MCP_CONFIG_FILE" << EOF
       "args": ["$SCRIPT_DIR/main.py"],
       "env": {
         "GLM_API_BASE": "https://open.bigmodel.cn/api/paas/v4/",
-        "GLM_IMAGE_MODEL": "glm-4.5v"
+        "GLM_IMAGE_MODEL": "glm-4.6v"
       }
     }
   }

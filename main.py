@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 GLM MCP 服务器主程序
-用于在 Claude Code 中集成智谱 AI GLM-4.5V 的图像分析功能
+用于在 Claude Code 中集成智谱 AI GLM-4.6V 的图像分析功能
 """
 
 import sys
@@ -73,7 +73,7 @@ def main():
             logger.error("需要的配置项：")
             logger.error("  - GLM_API_KEY: 智谱 AI API 密钥")
             logger.error("  - GLM_API_BASE: API 基础 URL (可选，默认: https://open.bigmodel.cn/api/paas/v4/chat/completions)")
-            logger.error("  - GLM_IMAGE_MODEL: 图像模型 (可选，默认: glm-4.5v)")
+            logger.error("  - GLM_IMAGE_MODEL: 图像模型 (可选，默认: glm-4.6v)")
             logger.error("详细错误信息:", **{"errors": config.get_validation_errors()})
             logger.error("请修复配置错误后重新运行程序")
             input("按回车键退出...")  # Windows 用户友好的退出方式

@@ -67,14 +67,12 @@ class Config:
                 logger.info(f"GLM_API_KEY source: {api_key_source}")
                 logger.info(f"GLM_API_BASE: {self.glm_api_base}")
                 logger.info(f"GLM_IMAGE_MODEL: {self.glm_image_model}")
-            else:
-                print("Configuration loaded successfully")
-            
+            # 在MCP模式下不使用print，避免干扰stdio通信
+
         except Exception as e:
             if LOGGER_AVAILABLE:
                 logger.log_exception(e, {"context": "Loading configuration"})
-            else:
-                print(f"Warning: Failed to load configuration: {e}")
+            # 在MCP模式下不使用print，避免干扰stdio通信
             self._validation_errors.append(f"配置加载失败: {str(e)}")
     
     def _load_env_manually(self, env_file: str):
@@ -92,8 +90,7 @@ class Config:
         except Exception as e:
             if LOGGER_AVAILABLE:
                 logger.warning(f"Failed to load {env_file} manually: {e}")
-            else:
-                print(f"Warning: Failed to load {env_file} manually: {e}")
+            # 在MCP模式下不使用print，避免干扰stdio通信
     
     @property
     def glm_api_key(self) -> Optional[str]:
@@ -105,7 +102,7 @@ class Config:
     
     @property
     def glm_image_model(self) -> str:
-        return os.getenv('GLM_IMAGE_MODEL', 'glm-4.5v')
+        return os.getenv('GLM_IMAGE_MODEL', 'glm-4.6v')
     
     @property
     def log_level(self) -> str:

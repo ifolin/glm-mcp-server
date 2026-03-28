@@ -10,14 +10,14 @@ try:
     MCP_AVAILABLE = True
 except ImportError:
     MCP_AVAILABLE = False
-    print("Warning: MCP module not available. Please install: pip install mcp")
+    # 在MCP模式下不使用print，避免干扰stdio通信
 
 try:
     from zhipuai import ZhipuAI
     ZHIPUAI_AVAILABLE = True
 except ImportError:
     ZHIPUAI_AVAILABLE = False
-    print("Warning: ZhipuAI module not available. Please install: pip install zhipuai")
+    # 在MCP模式下不使用print，避免干扰stdio通信
 
 from config import config
 from logger import logger
@@ -36,7 +36,7 @@ class GLMMcpServer:
     def __init__(self):
         # 检查依赖是否可用
         if not MCP_AVAILABLE:
-            print("Error: MCP module not available. Cannot start server.")
+            # 在MCP模式下不使用print，避免干扰stdio通信
             raise ImportError("MCP module is required")
         
         self.server = Server("glm-mcp")
@@ -91,7 +91,7 @@ class GLMMcpServer:
             return [
                 types.Tool(
                     name="read_image",
-                    description="使用 GLM-4.5V 模型分析本地图像",
+                    description="使用 GLM-4.6V 模型分析本地图像",
                     inputSchema={
                         "type": "object",
                         "properties": {
@@ -136,7 +136,7 @@ class GLMMcpServer:
         return [
             types.Tool(
                 name="read_image",
-                description="使用 GLM-4.5V 模型分析本地图像",
+                description="使用 GLM-4.6V 模型分析本地图像",
                 inputSchema={
                     "type": "object",
                     "properties": {
@@ -277,21 +277,21 @@ class GLMMcpServer:
                 "python_version": sys.version,
                 "platform": sys.platform
             })
-            
+
             from mcp.server.stdio import stdio_server
             logger.info("服务器正在运行，等待工具调用...")
-            
+
             async with stdio_server() as (read_stream, write_stream):
                 # 创建启用工具功能的初始化选项
                 init_options = self.server.create_initialization_options()
                 init_options.capabilities.tools = {"listChanged": True}
-                
+
                 await self.server.run(
                     read_stream,
                     write_stream,
                     init_options
                 )
-            
+
         except KeyboardInterrupt:
             logger.info("服务器被用户中断")
         except Exception as e:

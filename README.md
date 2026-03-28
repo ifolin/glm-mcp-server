@@ -4,12 +4,12 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
-![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![Claude](https://img.shields.io/badge/Claude%20Code-compatible-green.svg)
 
-**一个用于在 Claude Code 中集成智谱 AI GLM-4.5V 图像分析功能的 MCP 服务器**
+**一个用于在 Claude Code 中集成智谱 AI GLM-4.6V 图像分析功能的 MCP 服务器**
 
-[功能特性](#-功能特性) • [快速开始](#-快速开始) • [安装指南](#-安装指南) • [使用方法](#-使用方法) • [故障排除](#-故障排除)
+[功能特性](#-功能特性) • [快速开始](#-快速开始) • [手动安装](#-手动安装可选) • [配置说明](#-配置说明) • [故障排除](#-故障排除)
 
 </div>
 
@@ -22,11 +22,8 @@
 ### 📥 下载项目
 
 ```bash
-# 克隆项目
-git clone https://github.com/your-username/glm-mcp-server.git
+git clone https://github.com/ifolin/glm-mcp-server.git
 cd glm-mcp-server
-
-# 或者下载ZIP文件并解压
 ```
 
 ### 🚀 一键安装
@@ -36,7 +33,7 @@ cd glm-mcp-server
 
 1. 双击运行 `install.bat`
 2. 按照提示输入您的 GLM API 密钥
-3. 重启 Claude Code 即可使用
+3. 在 Claude Code 中打开此项目目录即可使用
 
 </details>
 
@@ -45,33 +42,29 @@ cd glm-mcp-server
 
 1. 在终端中运行：`chmod +x install.sh && ./install.sh`
 2. 按照提示输入您的 GLM API 密钥
-3. 重启 Claude Code 即可使用
+3. 在 Claude Code 中打开此项目目录即可使用
 
 </details>
-
-> **注意**：
-> - Windows版本使用 `python` 命令
-> - Linux/Mac版本使用 `python3` 命令
-> - 脚本会自动检测系统中可用的Python版本
 
 ### 🎯 验证安装
 
 安装完成后，在 Claude Code 中输入：
 ```
-@图像 ./test.jpg 这是什么？
+分析 ./03.jpg 这张图片的内容
 ```
 
 如果看到图像分析结果，说明安装成功！
 
+**注意**：Claude Code 会自动调用 `mcp__glm-mcp__analyze_image` 工具来处理图像分析请求。
+
 ## ✨ 功能特性
 
-- 🎯 **一键安装**：跨平台自动化安装脚本
-- 🔒 **安全配置**：API密钥存储在系统环境变量中
-- 🖼️ **多格式支持**：JPG、PNG、GIF、BMP等常见图片格式
-- 🌍 **跨平台**：Windows、Linux、macOS全支持
-- 📝 **智能分析**：基于GLM-4.5V模型的强大图像理解能力
-- 🛠️ **易于维护**：完整的日志系统和错误处理
-- 📚 **详细文档**：完整的安装、使用和故障排除指南
+- **一键安装**：跨平台自动化安装脚本
+- **安全配置**：API 密钥存储在项目 `.env` 文件中，不暴露在代码仓库
+- **多格式支持**：JPG、PNG、GIF、BMP 等常见图片格式
+- **跨平台**：Windows、Linux、macOS 全支持
+- **智能分析**：基于 GLM-4.6V 模型的强大图像理解能力
+- **FastMCP 驱动**：基于 MCP 官方 FastMCP 框架，轻量高效
 
 ## 🔧 手动安装（可选）
 
@@ -81,135 +74,186 @@ cd glm-mcp-server
 - 访问 [智谱AI控制台](https://open.bigmodel.cn/console)
 - 注册并获取您的 API 密钥
 
-### 2. 设置环境变量
-#### Windows
-```cmd
-setx GLM_API_KEY "your_api_key_here" /M
-setx GLM_API_BASE "https://open.bigmodel.cn/api/paas/v4/" /M
-setx GLM_IMAGE_MODEL "glm-4.5v" /M
-```
-
-#### Linux/Mac
-在 `~/.bashrc` 或 `~/.zshrc` 中添加：
+### 2. 安装依赖
 ```bash
-export GLM_API_KEY="your_api_key_here"
-export GLM_API_BASE="https://open.bigmodel.cn/api/paas/v4/"
-export GLM_IMAGE_MODEL="glm-4.5v"
+pip install -r requirements.txt
 ```
 
-### 3. 安装依赖
-```bash
-pip install zhipuai mcp python-dotenv
+依赖包含：
+- `zhipuai` — 智谱 AI SDK
+- `mcp` — MCP 官方包（含 FastMCP 框架）
+- `python-dotenv` — 环境变量管理
+
+### 3. 创建 `.env` 文件
+
+在项目根目录创建 `.env` 文件：
+```
+GLM_API_KEY=your_api_key_here
+GLM_API_BASE=https://open.bigmodel.cn/api/paas/v4/
+GLM_IMAGE_MODEL=glm-4.6v
 ```
 
-### 4. 配置 Claude Code
-创建或编辑 `%USERPROFILE%\.claude\mcp.json`（Windows）或 `~/.claude/mcp.json`（Linux/Mac）：
+### 4. 创建 `.mcp.json` 文件
+
+在项目根目录创建 `.mcp.json`（告诉 Claude Code 如何启动 MCP 服务器）：
 ```json
 {
   "mcpServers": {
     "glm-mcp": {
       "command": "python",
-      "args": ["/path/to/glmMcp/main.py"],
+      "args": ["/替换为你的实际路径/GLM-MCP/glm_fastmcp_server.py"],
       "env": {
         "GLM_API_BASE": "https://open.bigmodel.cn/api/paas/v4/",
-        "GLM_IMAGE_MODEL": "glm-4.5v"
+        "GLM_IMAGE_MODEL": "glm-4.6v"
       }
     }
   }
 }
 ```
 
+> **说明**：
+> - `command` — Python 可执行文件路径（建议使用绝对路径，如 conda 环境的 `E:\miniconda3\envs\py310\python.exe`）
+> - `args` — MCP 服务器入口文件 `glm_fastmcp_server.py` 的绝对路径
+> - `env` — 额外环境变量（`GLM_API_KEY` 通过 `.env` 文件提供，不需要写在这里）
+> - `.mcp.json` 已加入 `.gitignore`，不会被提交到代码仓库
+
+### 5. 配置权限（可选）
+
+如果 Claude Code 每次调用都要求确认，可在 `.claude/settings.json` 中添加：
+```json
+{
+  "permissions": {
+    "allow": [
+      "mcp__glm-mcp__analyze_image"
+    ]
+  }
+}
+```
+
+## ⚙️ 配置说明
+
+### MCP 配置层级
+
+Claude Code 的 MCP 配置支持三个层级：
+
+| 层级 | 文件位置 | 用途 |
+|------|----------|------|
+| **项目级** | 项目根目录 `.mcp.json` | 团队共享，可提交到 git |
+| **本地级** | 项目 `.claude/settings.local.json` | 个人私有配置 |
+| **用户级** | `~/.claude/settings.json` | 跨项目全局生效 |
+
+本项目使用 **项目级** `.mcp.json` 配置。
+
+### API 密钥管理
+
+| 方式 | 安全性 | 说明 |
+|------|--------|------|
+| `.env` 文件（推荐） | 高 | 已加入 `.gitignore`，不进入代码仓库 |
+| `.mcp.json` 的 `env` 字段 | 低 | 明文存储，不适合存放密钥 |
+| 系统环境变量 | 中 | 所有项目可用，但需手动配置 |
+
+本项目推荐使用 `.env` 文件方式，服务器代码通过 `python-dotenv` 自动加载。
+
+### 环境变量说明
+
+| 变量名 | 必需 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `GLM_API_KEY` | 是 | 无 | 智谱 AI API 密钥 |
+| `GLM_API_BASE` | 否 | `https://open.bigmodel.cn/api/paas/v4/` | API 基础地址 |
+| `GLM_IMAGE_MODEL` | 否 | `glm-4.6v` | 使用的视觉模型 |
+
+### Windows 特别说明
+
+本项目针对 Windows 平台做了以下适配：
+- **事件循环策略**：自动设置 `WindowsSelectorEventLoopPolicy`，解决 Windows 上 MCP stdio 通信兼容性问题
+- **编码处理**：建议在 `.mcp.json` 的 `env` 中添加 `"PYTHONIOENCODING": "utf-8"` 和 `"PYTHONUTF8": "1"`
+- **路径格式**：`.mcp.json` 中 Windows 路径使用双反斜杠 `\\` 或正斜杠 `/`
+
 ## 📖 使用方法
 
-安装完成后，在 Claude Code 中：
+安装完成后，在 Claude Code 中自然地描述您的需求：
 
-1. 使用 `@图像` 或 `@image` 后跟图片路径来分析图片
-2. 例如：`@图像 ./test.jpg 请描述这张图片的内容`
-3. 支持常见图片格式：JPG、PNG、GIF、BMP等
+**示例用法**：
+- "分析 ./test.jpg 这张图片的内容"
+- "请帮我看看 ./photos/image1.png 里面有什么"
+- "使用GLM-4.6V模型分析 /path/to/image.jpg，描述这张图片"
 
-## 🔒 安全特性
+**工作原理**：
+- Claude Code 会自动识别图像分析需求
+- 自动调用 `mcp__glm-mcp__analyze_image` 工具
+- 使用智谱 GLM-4.6V 模型进行图像理解
 
-- ✅ API 密钥存储在系统环境变量中，不暴露在代码中
-- ✅ 配置文件不包含敏感信息
-- ✅ 支持密钥轮换
-- ✅ 默认启用安全模式（仅从环境变量读取API密钥）
+**支持的图片格式**：
+JPG、PNG、GIF、BMP 等常见图片格式
 
 ## 🛠️ 故障排除
 
-### 1. 安装失败
-- 确保已安装 Python 3.7+
-- 确保网络连接正常
-- 检查是否有权限写入系统环境变量
+### 1. MCP 服务器无法启动
+- 确保 Python 3.10+ 已安装且 `command` 路径正确
+- 检查 `glm_fastmcp_server.py` 文件路径是否正确
+- Windows 用户确保使用绝对路径指向 Python 可执行文件
+- 运行 `test_install.bat` 进行诊断
 
 ### 2. API 密钥问题
-- 确认 API 密钥是否正确复制
-- 检查环境变量是否正确设置
-- 验证 API 密钥是否有效
+- 确认 `.env` 文件中 `GLM_API_KEY` 已正确设置
+- `.env` 文件应位于项目根目录
+- 验证 API 密钥是否有效：访问 [智谱AI控制台](https://open.bigmodel.cn/console)
 
-### 3. Claude Code 无法识别
+### 3. Claude Code 无法识别工具
+- 确保在 Claude Code 中**打开此项目目录**（`.mcp.json` 所在目录）
+- 检查 `.mcp.json` 文件格式是否正确（JSON 语法）
+- 确认权限配置中包含 `mcp__glm-mcp__analyze_image`
 - 重启 Claude Code
-- 检查 MCP 配置文件路径是否正确
-- 确认权限配置中包含 `mcp__glm-mcp__read_image`
 
 ### 4. 图像分析失败
-- 检查图片路径是否正确
+- 检查图片路径是否使用绝对路径
 - 确认图片格式是否支持
 - 查看日志文件：`mcpserver.log`
+
+### 5. Windows 上服务器卡死/无响应
+这是 Windows 上 Python 事件循环与 MCP stdio 传输不兼容导致的。本项目已在 `glm_fastmcp_server.py` 中自动处理，如果仍出现问题：
+- 确认使用的是 `glm_fastmcp_server.py` 而非 `server.py` 或 `main.py`
+- 检查是否有其他代码向 stdout 输出内容（会干扰 MCP 协议通信）
 
 ## 📝 更新配置
 
 ### 更新 API 密钥
-1. 修改系统环境变量 `GLM_API_KEY`
+1. 编辑项目根目录的 `.env` 文件
 2. 重启 Claude Code
 
 ### 更新模型版本
-修改环境变量 `GLM_IMAGE_MODEL`，支持的模型：
-- `glm-4.5v`（推荐）
+修改 `.env` 或 `.mcp.json` 中的 `GLM_IMAGE_MODEL`，支持的模型：
+- `glm-4.6v`（推荐）
 - `glm-4v`
-- `glm-3v-turbo`
 
 ## 📋 文件结构
 
 ```
-glmMcp/
-├── main.py              # 主程序
-├── config.py            # 配置管理
-├── server.py            # MCP服务器
-├── image_processor.py   # 图像处理
-├── logger.py            # 日志系统
-├── utils.py             # 工具函数
-├── install.bat          # Windows一键安装
-├── install.sh           # Linux/Mac一键安装
-├── test_install.bat     # Windows安装测试
-├── test_install.sh      # Linux/Mac安装测试
-├── .env.template        # 环境变量模板
-├── requirements.txt     # Python依赖
-├── README.md            # 使用说明
-├── TESTING.md           # 测试指南
-└── mcpserver.log        # 日志文件
+GLM-MCP/
+├── glm_fastmcp_server.py    # MCP 服务器核心（基于 FastMCP 框架）
+├── main.py                  # 原始主程序入口
+├── config.py                # 配置管理模块
+├── server.py                # 原始 MCP 服务器（低级 API 实现）
+├── image_processor.py       # 图像处理模块
+├── logger.py                # 日志系统（MCP 模式自动禁用控制台输出）
+├── utils.py                 # 工具函数
+├── .mcp.json                # MCP 服务器声明（项目级配置）
+├── .env                     # API 密钥等敏感配置（不提交到 git）
+├── .gitignore               # Git 忽略规则
+├── .claude/
+│   ├── settings.json        # 项目级权限配置
+│   └── settings.local.json  # 本地权限配置（不提交到 git）
+├── install.bat              # Windows 一键安装
+├── test_install.bat         # Windows 安装验证
+├── start_server.bat         # Windows 手动启动（调试用）
+├── requirements.txt         # Python 依赖
+├── README.md                # 本文档
+└── CHANGELOG.md             # 更新日志
 ```
 
 ## 🤝 贡献
 
 我们欢迎任何形式的贡献！请查看 [贡献指南](CONTRIBUTING.md) 了解如何参与项目开发。
-
-### 📝 提交问题
-- 使用 [GitHub Issues](https://github.com/your-username/glm-mcp-server/issues) 报告问题
-- 请提供详细的错误信息和复现步骤
-- 附上相关的日志文件内容
-
-### 🔄 提交代码
-1. Fork 本项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
-
-## 📊 项目统计
-
-![GitHub stars](https://img.shields.io/github/stars/your-username/glm-mcp-server?style=social)
-![GitHub forks](https://img.shields.io/github/forks/your-username/glm-mcp-server?style=social)
-![GitHub issues](https://img.shields.io/github/issues/your-username/glm-mcp-server)
 
 ## 📄 许可证
 
@@ -217,7 +261,7 @@ glmMcp/
 
 ## 🙏 致谢
 
-- [智谱AI](https://open.bigmodel.cn/) - 提供强大的GLM-4.5V模型
+- [智谱AI](https://open.bigmodel.cn/) - 提供强大的GLM-4.6V模型
 - [Claude Code](https://claude.ai/code) - 优秀的AI编程助手
 - [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) - 标准化的AI服务接口
 
@@ -225,19 +269,12 @@ glmMcp/
 
 <img width="477" height="477" alt="林枫_qrcode" src="https://github.com/user-attachments/assets/14bae59a-3e7d-4843-9e72-6744b1d5b636" />
 
-- 📧 **问题反馈**：[GitHub Issues](https://github.com/your-username/glm-mcp-server/issues)
-- 📖 **文档**：[完整文档](https://github.com/your-username/glm-mcp-server/wiki)
-- 💬 **讨论**：[GitHub Discussions](https://github.com/your-username/glm-mcp-server/discussions)
+- **问题反馈**：[GitHub Issues](https://github.com/ifolin/glm-mcp-server/issues)
 
 ---
 
 <div align="center">
 
-
-
-
 **如果这个项目对您有帮助，请给我们一个 ⭐️ Star**
-
-![Star History](https://img.shields.io/github/stars/your-username/glm-mcp-server?style=for-the-badge)
 
 </div>

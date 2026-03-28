@@ -1,68 +1,52 @@
 @echo off
-echo 测试GLM MCP安装脚本
+chcp 65001 >nul
+echo ========================================
+echo      GLM MCP Server 安装验证
+echo ========================================
 echo.
 
 cd /d "%~dp0"
 
-echo [测试1] 检查Python环境...
-python --version
-if errorlevel 1 (
-    echo [失败] Python未安装
-) else (
-    echo [成功] Python已安装
-)
+echo [1/4] 检查Python依赖...
+python -c "import zhipuai; print('[OK] zhipuai ' + zhipuai.__version__)" 2>nul || echo [FAIL] zhipuai 未安装
+python -c "import mcp; print('[OK] mcp')" 2>nul || echo [FAIL] mcp 未安装
+python -c "import dotenv; print('[OK] python-dotenv')" 2>nul || echo [FAIL] python-dotenv 未安装
 
 echo.
-echo [测试2] 检查依赖包...
-python -c "import zhipuai; print('zhipuai: OK')" 2>nul
-if errorlevel 1 (
-    echo [警告] zhipuai未安装
-) else (
-    echo [成功] zhipuai已安装
-)
-
-python -c "import mcp; print('mcp: OK')" 2>nul
-if errorlevel 1 (
-    echo [警告] mcp未安装
-) else (
-    echo [成功] mcp已安装
-)
-
-python -c "import dotenv; print('dotenv: OK')" 2>nul
-if errorlevel 1 (
-    echo [警告] dotenv未安装
-) else (
-    echo [成功] dotenv已安装
-)
-
-echo.
-echo [测试3] 检查配置文件...
+echo [2/4] 检查配置文件...
 if exist .env (
-    echo [信息] .env文件存在
-    type .env | findstr "GLM_API_KEY"
+    echo [OK] .env 文件存在
+    python -c "from dotenv import load_dotenv; load_dotenv(); import os; print('  API Key:', '已设置' if os.getenv('GLM_API_KEY') else '未设置'); print('  API Base:', os.getenv('GLM_API_BASE', '默认值')); print('  Model:', os.getenv('GLM_IMAGE_MODEL', '默认值'))"
 ) else (
-    echo [信息] .env文件不存在
+    echo [FAIL] .env 文件不存在，请运行 install.bat
 )
 
 echo.
-echo [测试4] 检查MCP配置...
-if exist "%USERPROFILE%\.claude\mcp.json" (
-    echo [信息] MCP配置文件存在
-    findstr "glm-mcp" "%USERPROFILE%\.claude\mcp.json"
+if exist .mcp.json (
+    echo [OK] .mcp.json 文件存在
 ) else (
-    echo [信息] MCP配置文件不存在
+    echo [FAIL] .mcp.json 文件不存在
 )
 
 echo.
-echo [测试5] 检查环境变量...
-echo GLM_API_KEY: %GLM_API_KEY%
-echo GLM_API_BASE: %GLM_API_BASE%
-echo GLM_IMAGE_MODEL: %GLM_IMAGE_MODEL%
+echo [3/4] 检查MCP服务器模块...
+python -c "from mcp.server.fastmcp import FastMCP; print('[OK] FastMCP 可用')" 2>nul || echo [FAIL] FastMCP 不可用
+python -c "import glm_fastmcp_server; print('[OK] glm_fastmcp_server 模块可加载')" 2>nul || echo [FAIL] glm_fastmcp_server 模块加载失败
 
 echo.
-echo [测试6] 测试配置加载...
-python -c "from config import config; print('配置加载测试:'); print('API Key:', '设置' if config.glm_api_key else '未设置'); print('API Base:', config.glm_api_base); print('Model:', config.glm_image_model)"
+echo [4/4] 测试API连接...
+python -c "
+from dotenv import load_dotenv
+load_dotenv()
+import os
+from zhipuai import ZhipuAI
+client = ZhipuAI(api_key=os.getenv('GLM_API_KEY'), base_url=os.getenv('GLM_API_BASE', 'https://open.bigmodel.cn/api/paas/v4/'))
+resp = client.chat.completions.create(model='glm-4-flash', messages=[{'role':'user','content':'hi'}], max_tokens=10)
+print('[OK] API连接正常，模型响应:', resp.choices[0].message.content)
+" 2>nul || echo [FAIL] API连接失败，请检查API密钥
 
 echo.
-echo 测试完成！
+echo ========================================
+echo        验证完成
+echo ========================================
 pause
