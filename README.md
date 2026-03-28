@@ -154,6 +154,54 @@ Claude Code 的 MCP 配置支持三个层级：
 
 本项目推荐使用 `.env` 文件方式，服务器代码通过 `python-dotenv` 自动加载。
 
+### 跨项目全局使用（所有项目可用）
+
+默认情况下 MCP 服务器仅在当前项目目录生效。如需在所有项目中使用 GLM 图像分析：
+
+```bash
+# 方法一：通过 CLI 注册到用户级（推荐）
+claude mcp add glm-mcp -s user \
+  -e GLM_API_KEY=your_api_key \
+  -e GLM_API_BASE=https://open.bigmodel.cn/api/paas/v4/ \
+  -e GLM_IMAGE_MODEL=glm-4.6v \
+  -- /path/to/python /path/to/GLM-MCP/glm_fastmcp_server.py
+```
+
+Windows 用户：
+```cmd
+claude mcp add glm-mcp -s user -e GLM_API_KEY=your_api_key -e GLM_API_BASE=https://open.bigmodel.cn/api/paas/v4/ -e GLM_IMAGE_MODEL=glm-4.6v -- "E:\miniconda3\envs\py310\python.exe" "E:\claude-code\GLM-MCP\glm_fastmcp_server.py"
+```
+
+注册后，在**任何项目**中都可以直接使用 `mcp__glm-mcp__analyze_image` 分析图片。
+
+### 切换内置/本地图片分析工具
+
+Claude Code 可能内置了付费的图片分析 MCP（如 `4_5v_mcp`）。可通过 `switch_mcp.bat` 脚本切换：
+
+```
+双击运行 switch_mcp.bat
+```
+
+提供三种模式：
+
+| 选项 | 说明 | 适用场景 |
+|------|------|----------|
+| 1. glm-mcp（免费） | 禁用内置，只用本地 GLM | 日常使用（推荐） |
+| 2. 内置付费版 | 禁用本地，只用内置 | 需要内置模型时 |
+| 3. 两者都允许 | Claude 自动选择 | 灵活使用 |
+
+切换后需**重启 Claude Code** 生效。
+
+手动切换（编辑 `~/.claude/settings.json`）：
+```json
+{
+  "permissions": {
+    "allow": ["mcp__glm-mcp__analyze_image"],
+    "deny": ["mcp__4_5v_mcp__*"]
+  }
+}
+```
+
 ### 环境变量说明
 
 | 变量名 | 必需 | 默认值 | 说明 |
@@ -244,6 +292,7 @@ GLM-MCP/
 │   ├── settings.json        # 项目级权限配置
 │   └── settings.local.json  # 本地权限配置（不提交到 git）
 ├── install.bat              # Windows 一键安装
+├── switch_mcp.bat           # MCP 工具切换（免费/付费）
 ├── test_install.bat         # Windows 安装验证
 ├── start_server.bat         # Windows 手动启动（调试用）
 ├── requirements.txt         # Python 依赖
